@@ -9,34 +9,34 @@ export default function Home() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Improved Animation sequence with reduced delays
+  // Simplified animation: Show logo, then transition to main site.
   useEffect(() => {
-    const sequence = [
-      { step: 1, delay: 800 },   // "Welcome" appears
-      { step: 2, delay: 1800 },  // "Welcome to" appears  
-      { step: 3, delay: 2800 },  // Logo appears dramatically
-      { step: 4, delay: 4300 },  // Start transition (1.5s after logo)
-      { step: 5, delay: 5100 },  // Main site appears
-    ];
+    // Show the logo immediately
+    setCurrentStep(1);
 
-    sequence.forEach(({ step, delay }) => {
-      setTimeout(() => {
-        if (step === 4) {
-          setIsTransitioning(true);
-        } else if (step === 5) {
-          setShowMainSite(true);
-        } else {
-          setCurrentStep(step);
-        }
-      }, delay);
-    });
+    // Set timeout to start the transition after the logo has been displayed
+    const transitionTimeout = setTimeout(() => {
+      setIsTransitioning(true);
+    }, 2500); // Logo is visible for 2.5 seconds
+
+    // Set timeout to show the main site after the transition starts
+    const showSiteTimeout = setTimeout(() => {
+      setShowMainSite(true);
+    }, 3300); // Transition animation takes 800ms
+
+    // Cleanup timeouts on component unmount
+    return () => {
+      clearTimeout(transitionTimeout);
+      clearTimeout(showSiteTimeout);
+    };
   }, []);
+
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Improved Cinematic Intro Screen with Better Colors & Full Coverage
+  // Improved Cinematic Intro Screen with just the logo centered
   if (!showMainSite) {
     return (
       <div className="fixed inset-0 overflow-hidden">
@@ -94,36 +94,13 @@ export default function Home() {
           isTransitioning ? 'transform scale-75 opacity-0' : 'transform scale-100 opacity-100'
         }`}>
           <div className="text-center px-8">
-            {/* Step 1 & 2: Welcome to - Consistent Font & Better Positioning */}
-            <div className="mb-8">
-              <div className={`transition-all duration-1000 ${
-                currentStep >= 1 
-                  ? 'opacity-100 transform translate-y-0' 
-                  : 'opacity-0 transform translate-y-8'
-              }`}>
-                <h1 className="text-7xl md:text-8xl font-black text-transparent bg-gradient-to-r from-amber-200 via-green-200 to-amber-300 bg-clip-text leading-tight">
-                  Welcome
-                </h1>
-              </div>
-
-              <div className={`transition-all duration-1000 delay-300 ${
-                currentStep >= 2 
-                  ? 'opacity-100 transform translate-y-0' 
-                  : 'opacity-0 transform translate-y-8'
-              }`}>
-                <h2 className="text-7xl md:text-8xl font-black text-white leading-tight -mt-4">
-                  to
-                </h2>
-              </div>
-            </div>
-
-            {/* Step 3: Logo appears closer with reduced spacing */}
+            {/* Logo appears in the center */}
             <div className={`transition-all duration-1500 delay-500 ${
-              currentStep >= 3 
+              currentStep >= 1 
                 ? 'opacity-100 transform scale-100 translate-y-0' 
                 : 'opacity-0 transform scale-75 translate-y-8'
             }`}>
-              <div className="relative -mt-6">
+              <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-400/20 to-green-400/20 rounded-2xl blur-2xl animate-pulse"></div>
                 <Image
                   src="/logo.png"
